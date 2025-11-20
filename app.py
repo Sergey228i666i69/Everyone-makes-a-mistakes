@@ -48,11 +48,11 @@ count = 0
 def counter():
     global count
     count += 1
-
+    
     time = datetime.datetime.today()
     url = request.url
     client_ip = request.remote_addr
-    
+
     return '''
 <!doctype html>
 <html>
@@ -60,7 +60,7 @@ def counter():
         <h1>Счётчик</h1>
             <p>Внимание! Вас поставили на счётчик! Вы должны создателю страницы ''' + str(count) + ''' миллионов рублей</p>
             <p>Дата и время: ''' + str(time) + '''</p>
-            <p>Запрошенный адрес: ''' + str(url) + '''</p>
+            <p>Запрошенный адрес: ''' + str(url) + '''</p>
             <p>Ваш IP-адрес: ''' + str(client_ip) + '''</p>
     </body>
 </html>
