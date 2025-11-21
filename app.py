@@ -2,9 +2,43 @@ from flask import Flask, url_for, request, redirect
 import datetime
 app = Flask(__name__)
 
+
 @app.errorhandler(404)
 def not_found(err):
     return "Да нету такой страницы!", 404
+
+
+@app.route("/")
+@app.route("/index")
+def index():
+    return """
+<!doctype html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <title>НГТУ, ФБ, Лабораторные работы</title>
+    </head>
+    <body>
+        <header>
+            <h1>НГТУ, ФБ, WEB-программирование, часть 2. Список лабораторных</h1>
+        </header>
+
+        <main>
+            <nav>
+                <ul>
+                    <li><a href="/lab1">Первая лабораторная</a></li>
+                </ul>
+            </nav>
+        </main>
+
+        <footer>
+            <p>Генерозов Сергей Евгеньевич, группа ФБИ-33, 3 курс, 2025 год</p>
+        </footer>
+    </body>
+</html>
+"""
+
+
 
 @app.route("/lab1/web")
 def web():
