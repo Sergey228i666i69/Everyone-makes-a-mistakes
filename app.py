@@ -2,9 +2,27 @@ from flask import Flask, url_for, request, redirect
 import datetime
 app = Flask(__name__)
 
+log_journal = []
 
 @app.errorhandler(404)
 def not_found(err):
+    ip = request.remote_addr
+    time_now = datetime.datetime.now()
+    url = request.url
+
+    log_journal.append({
+        "time": time_now,
+        "ip": ip,
+        "url": url
+    })
+
+    journal_items = ""
+    for item in log_journal:
+        journal_items += (
+            f"<li>[{item['time']}] пользователь {item['ip']} "
+            f"зашёл на адрес: <a href=\"{item['url']}\">{item['url']}</a></li>"
+        )
+
     img_path = url_for("static", filename="error404.jpg")
 
     return f"""
@@ -18,36 +36,60 @@ def not_found(err):
                 font-family: Arial, sans-serif;
                 background-color: #f5f5f5;
                 color: #333;
-                text-align: center;
-                padding-top: 50px;
+                max-width: 900px;
+                margin: 40px auto;
+                padding: 20px;
+                border-radius: 10px;
+                box-shadow: 0 0 15px rgba(0,0,0,0.15);
             }}
             h1 {{
-                font-size: 48px;
+                font-size: 42px;
                 margin-bottom: 10px;
             }}
             p {{
                 font-size: 18px;
-                margin-bottom: 20px;
+                margin-bottom: 10px;
             }}
             img {{
-                max-width: 400px;
+                max-width: 300px;
                 height: auto;
-                margin-bottom: 20px;
+                margin: 20px 0;
+                display: block;
             }}
             a {{
                 color: #0066cc;
                 text-decoration: none;
-                font-size: 18px;
             }}
             a:hover {{
                 text-decoration: underline;
+            }}
+            h2 {{
+                margin-top: 30px;
+                font-size: 24px;
+            }}
+            ul.log {{
+                list-style-type: disc;
+                padding-left: 25px;
+                font-size: 14px;
+            }}
+            ul.log li {{
+                margin-bottom: 4px;
             }}
         </style>
     </head>
     <body>
         <h1>404</h1>
-        <p>Да нету такой страницы!</p>
+        <p>Упс! Такой страницы у нас нет.</p>
         <img src="{img_path}" alt="Страница не найдена">
+
+        <p><b>Ваш IP:</b> {ip}</p>
+        <p><b>Дата и время доступа:</b> {time_now}</p>
+        <p><a href="/">Перейти на главную страницу</a></p>
+
+        <h2>Журнал</h2>
+        <ul class="log">
+            {journal_items}
+        </ul>
     </body>
 </html>
 """, 404
@@ -103,11 +145,28 @@ def lab1():
             зовые возможности.
         </p>
 
-        <p><a href="/">Список работ</a></p>
+        <p><a href="/">На главную</a></p>
+
+        <h2>Список роутов</h2>
+        <ul>
+            <li><a href="/lab1/web">/lab1/web</a> — Web-страница</li>
+            <li><a href="/lab1/author">/lab1/author</a> — Автор</li>
+            <li><a href="/lab1/image">/lab1/image</a> — Красивый дуб</li>
+            <li><a href="/lab1/counter">/lab1/counter</a> — Счётчик</li>
+            <li><a href="/lab1/counter/reset">/lab1/counter/reset</a> — Сброс счётчика</li>
+            <li><a href="/lab1/info">/lab1/info</a> — Открыть "Автор" слегка другим способом</li>
+            <li><a href="/lab1/created">/lab1/created</a> — Создать что-то</li>
+            <li><a href="/lab1/error400">/lab1/error400</a> — Вызвать ошибку 400</li>
+            <li><a href="/lab1/error401">/lab1/error401</a> — Вызвать ошибку 401</li>
+            <li><a href="/lab1/error402">/lab1/error402</a> — Вызвать ошибку 402</li>
+            <li><a href="/lab1/error403">/lab1/error403</a> — Вызвать ошибку 403</li>
+            <li><a href="/lab1/error405">/lab1/error405</a> — Вызвать ошибку 405</li>
+            <li><a href="/lab1/error418">/lab1/error418</a> — Вызвать ошибку 418</li>
+            <li><a href="/lab1/error500">/lab1/error500</a> — Вызвать ошибку 500</li>
+        </ul>
     </body>
 </html>
 """
-
 
 @app.route("/lab1/web")
 def web():
