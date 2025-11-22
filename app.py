@@ -315,3 +315,24 @@ def error_418():
 </html>
 """, 418
 
+
+@app.route("/lab1/error500")
+def make_error():
+    return 1 / 0
+
+
+@app.errorhandler(500)
+def internal_error(err):
+    return """
+<!doctype html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <title>Внутренняя ошибка сервера</title>
+    </head>
+    <body>
+        <h1>Ошибка 500</h1>
+        <p>Похоже, произошла какая-то внутренняя ошибка. Компенсации не ждите. Спасибо за внимание.</p>
+    </body>
+</html>
+""", 500
