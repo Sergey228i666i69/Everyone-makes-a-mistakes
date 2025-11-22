@@ -405,3 +405,13 @@ def internal_error(err):
     </body>
 </html>
 """, 500
+
+
+@app.route("/lab2/a")
+def a():
+    return 'ok'
+
+
+@app.route("/lab2/a/")
+def a2():
+    return 'ok-ok, very good'
