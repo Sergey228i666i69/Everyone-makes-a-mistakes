@@ -169,4 +169,104 @@ def created():
 ''', 201
 
 
+@app.route("/lab1/error400")
+def error_400():
+    return """
+<!doctype html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <title>400 Bad Request</title>
+    </head>
+    <body>
+        <h1>400 Bad Request</h1>
+        <p>Ошибка 400. Неверный запрос.</p>
+    </body>
+</html>
+""", 400
+
+
+@app.route("/lab1/error401")
+def error_401():
+    return """
+<!doctype html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <title>401 Unauthorized</title>
+    </head>
+    <body>
+        <h1>401 Unauthorized</h1>
+        <p>Ошибка 401. Требуется аутентификация.</p>
+    </body>
+</html>
+""", 401
+
+
+@app.route("/lab1/error402")
+def error_402():
+    return """
+<!doctype html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <title>402 Payment Required</title>
+    </head>
+    <body>
+        <h1>402 Payment Required</h1>
+        <p>Ошибка 402. Требуется оплата.</p>
+    </body>
+</html>
+""", 402
+
+
+@app.route("/lab1/error403")
+def error_403():
+    return """
+<!doctype html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <title>403 Forbidden</title>
+    </head>
+    <body>
+        <h1>403 Forbidden</h1>
+        <p>Ошибка 403. Доступ к ресурсу запрещён.</p>
+    </body>
+</html>
+""", 403
+
+
+@app.route("/lab1/error405")
+def error_405():
+    return """
+<!doctype html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <title>405 Method Not Allowed</title>
+    </head>
+    <body>
+        <h1>405 Method Not Allowed</h1>
+        <p>Ошибка 405. HTTP-метод не допускается для этого ресурса.</p>
+    </body>
+</html>
+""", 405
+
+
+@app.route("/lab1/error418")
+def error_418():
+    return """
+<!doctype html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <title>418 I'm a teapot</title>
+    </head>
+    <body>
+        <h1>418 I'm a teapot</h1>
+        <p>Ошибка 418. Я — чайник.</p>
+    </body>
+</html>
+""", 418
 
