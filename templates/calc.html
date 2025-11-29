@@ -1,0 +1,61 @@
+{% extends "base.html" %}
+
+{% block lab %}Лабораторная работа 2{% endblock %}
+
+{% block main %}
+<h1>Калькулятор двух чисел</h1>
+
+<p>Первое число: <b>{{ a }}</b></p>
+<p>Второе число: <b>{{ b }}</b></p>
+
+<table border="1" cellpadding="8" cellspacing="0">
+    <tr>
+        <th>Операция</th>
+        <th>Результат</th>
+    </tr>
+    <tr>
+        <td>{{ a }} + {{ b }}</td>
+        <td>{{ a + b }}</td>
+    </tr>
+    <tr>
+        <td>{{ a }} - {{ b }}</td>
+        <td>{{ a - b }}</td>
+    </tr>
+    <tr>
+        <td>{{ a }} * {{ b }}</td>
+        <td>{{ a * b }}</td>
+    </tr>
+    <tr>
+        <td>
+            {% if b != 0 %}
+                {{ a }} / {{ b }}
+            {% else %}
+                Деление на {{ b }}
+            {% endif %}
+        </td>
+        <td>
+            {% if b != 0 %}
+                {{ a / b }}
+            {% else %}
+                Деление на ноль невозможно
+            {% endif %}
+        </td>
+    </tr>
+    <tr>
+        <td>{{ a }}<sup>{{ b }}</sup></td>
+        <td>{{ a ** b }}</td>
+    </tr>
+</table>
+
+<p style="margin-top: 20px;">
+    Примеры ссылок:
+</p>
+<ul>
+    <li><a href="{{ url_for('calc', a=2, b=3) }}">2 и 3</a></li>
+    <li><a href="{{ url_for('calc', a=10, b=5) }}">10 и 5</a></li>
+    <li><a href="{{ url_for('calc_default') }}">Значения по умолчанию (1 и 1)</a></li>
+</ul>
+
+<p><a href="/lab2/">К лабораторной №2</a></p>
+<p><a href="/">На главную</a></p>
+{% endblock %}
