@@ -417,108 +417,87 @@ def a():
 def a2():
     return 'ok-ok, very good'
 
-flower_list = ['роза', 'тюльпан', 'незабудка', 'ромашка']
-
-@app.route("/lab2/flowers/<int:flower_id>")
-def flowers(flower_id):
-    if flower_id < 0 or flower_id >= len(flower_list):
-        abort(404)
-
-    flower_name = flower_list[flower_id]
-    all_flowers_url = url_for('all_flowers')
-
-    return f"""
-<!doctype html>
-<html>
-    <head>
-        <meta charset="utf-8">
-        <title>Цветок №{flower_id}</title>
-    </head>
-    <body>
-        <h1>Информация о цветке</h1>
-        <p><b>ID:</b> {flower_id}</p>
-        <p><b>Название:</b> {flower_name}</p>
-        <p><b>Всего цветов в списке:</b> {len(flower_list)}</p>
-
-        <p><a href="{all_flowers_url}">Посмотреть все цветы</a></p>
-        <p><a href="/lab2/">К лабораторной №2</a></p>
-        <p><a href="/">На главную</a></p>
-    </body>
-</html>
-"""
-    
-
-@app.route("/lab2/add_flower/<name>")
-def add_flowers(name):
-    flower_list.append(name)
-    return f'''
-<!doctype html>
-<html>
-    <body>
-    <h1>Добавлен новый цветок</h1>
-    <p>Названиен нового цветка: {name}</p>
-    <p>Всего цветов: {len(flower_list)}</p>
-    <p>Полный список:  {flower_list}</p>
-    </body>
-</html>
-'''
-
-@app.route("/lab2/add_flower/")
-def add_flower_no_name():
-    return "вы не задали имя цветка", 400
+flower_list = [
+    {"name": "роза",      "price": 300},
+    {"name": "тюльпан",   "price": 310},
+    {"name": "незабудка", "price": 320},
+    {"name": "ромашка",   "price": 330},
+]
 
 
 @app.route("/lab2/flowers")
 def all_flowers():
-    items = "".join(
-        f"<li>{i}. {name}</li>" 
-        for i, name in enumerate(flower_list)
+    """Страница со всеми цветами, с ценами и ссылками на удаление."""
+    return render_template("flowers.html", flowers=flower_list)
+
+
+@app.route("/lab2/flowers/<int:flower_id>")
+def flower_detail(flower_id):
+    """Страница одного цветка по номеру."""
+    if flower_id < 0 or flower_id >= len(flower_list):
+        abort(404)
+
+    flower = flower_list[flower_id]
+    return render_template(
+        "flower_detail.html",
+        flower=flower,
+        flower_id=flower_id,
+        total=len(flower_list)
     )
-    clear_url = url_for('clear_flowers')
 
-    return f"""
-<!doctype html>
-<html>
-    <head>
-        <meta charset="utf-8">
-        <title>Все цветы</title>
-    </head>
-    <body>
-        <h1>Список всех цветов</h1>
-        <p>Общее количество цветов: {len(flower_list)}</p>
-        <ul>
-            {items}
-        </ul>
 
-        <p><a href="{clear_url}">Очистить список цветов</a></p>
-        <p><a href="/lab2/">К лабораторной №2</a></p>
-        <p><a href="/">На главную</a></p>
-    </body>
-</html>
-"""
+@app.route("/lab2/add_flower/<name>")
+def add_flowers(name):
+    """
+    Добавление нового цветка по имени (как было в задании).
+    Цена для новых задаётся автоматически по простой формуле,
+    чтобы были 300, 310, 320, 330, 340 и т.д.
+    """
+    base_price = 300
+    new_price = base_price + len(flower_list) * 10
+    flower_list.append({"name": name, "price": new_price})
+    return redirect(url_for("all_flowers"))
+
+
+@app.route("/lab2/add_flower/", methods=["GET"])
+def add_flower_no_name():
+    """Случай, когда имя цветка не задано вообще."""
+    return "вы не задали имя цветка", 400
+
+
+@app.route("/lab2/add_flower_form", methods=["POST"])
+def add_flowers_form():
+    """
+    Обработчик формы на странице всех цветов.
+    Берёт имя из поля, если оно пустое — 400, иначе
+    перенаправляет на /lab2/add_flower/<name>.
+    """
+    name = request.form.get("name", "").strip()
+    if not name:
+        return "вы не задали имя цветка", 400
+
+    return redirect(url_for("add_flowers", name=name))
+
+
+@app.route("/lab2/del_flower/<int:flower_id>")
+def del_flower(flower_id):
+    """
+    Удаление одного цветка по номеру.
+    Если такого номера нет — 404, если есть — удаляем
+    и возвращаемся на список цветов.
+    """
+    if flower_id < 0 or flower_id >= len(flower_list):
+        abort(404)
+
+    del flower_list[flower_id]
+    return redirect(url_for("all_flowers"))
+
 
 @app.route("/lab2/flowers/clear")
 def clear_flowers():
+    """Полная очистка списка цветов."""
     flower_list.clear()
-    all_flowers_url = url_for('all_flowers')
-
-    return f"""
-<!doctype html>
-<html>
-    <head>
-        <meta charset="utf-8">
-        <title>Список очищен</title>
-    </head>
-    <body>
-        <h1>Список цветов очищен</h1>
-        <p>Теперь в списке {len(flower_list)} цветов.</p>
-
-        <p><a href="{all_flowers_url}">Перейти к списку всех цветов</a></p>
-        <p><a href="/lab2/">К лабораторной №2</a></p>
-        <p><a href="/">На главную</a></p>
-    </body>
-</html>
-"""
+    return redirect(url_for("all_flowers"))
 
 
 
