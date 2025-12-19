@@ -1,13 +1,20 @@
-from flask import Flask, url_for, request, redirect, render_template, abort 
-import datetime
+from flask import Flask, url_for, request, redirect, abort, render_template, session
+import os
+from datetime import datetime
+
+from lab7 import lab7
 app = Flask(__name__)
+app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY', 'секретно-секретный секрет')
+app.config['DB_TYPE'] = os.getenv('DB_TYPE', 'postgres')
+
+app.register_blueprint(lab7)
 
 log_journal = []
 
 @app.errorhandler(404)
 def not_found(err):
     ip = request.remote_addr
-    time_now = datetime.datetime.now()
+    time_now = datetime.now()  # Правильно: datetime.now()
     url = request.url
 
     log_journal.append({
@@ -115,6 +122,7 @@ def index():
                 <ul>
                     <li><a href="/lab1">Первая лабораторная</a></li>
                     <li><a href="/lab2/">Вторая лабораторная</a></li>
+                    <li><a href="/lab7/">Седьмая лабораторная</a></li>
                 </ul>
             </nav>
         </main>
