@@ -1,0 +1,783 @@
+{% extends "base.html" %}
+
+{% block lab %}Лабораторная работа 6{% endblock %}
+
+{% block script %}
+<style>
+    /* Общие стили */
+    .container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 30px 20px;
+    }
+
+    .header-section {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border-radius: 15px;
+        padding: 30px;
+        margin-bottom: 30px;
+        color: white;
+        box-shadow: 0 10px 30px rgba(102, 126, 234, 0.3);
+    }
+
+    .header-section h1 {
+        color: white;
+        margin-bottom: 15px;
+        border-bottom: 2px solid rgba(255, 255, 255, 0.3);
+        padding-bottom: 15px;
+    }
+
+    .controls-panel {
+        background: white;
+        border-radius: 12px;
+        padding: 25px;
+        margin-bottom: 30px;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+        border: 1px solid #eef2f7;
+    }
+
+    .user-status {
+        display: inline-flex;
+        align-items: center;
+        gap: 12px;
+        padding: 14px 24px;
+        border-radius: 50px;
+        font-weight: 500;
+        font-size: 15px;
+        margin-right: 20px;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.07);
+    }
+
+    .user-status.authenticated {
+        background: linear-gradient(135deg, #4CAF50 0%, #45a049 100%);
+        color: white;
+    }
+
+    .user-status.unauthenticated {
+        background: linear-gradient(135deg, #ff9800 0%, #f57c00 100%);
+        color: white;
+    }
+
+    .user-status i {
+        font-size: 18px;
+    }
+
+    .btn-refresh {
+        background: linear-gradient(135deg, #2196F3 0%, #1976D2 100%);
+        color: white;
+        border: none;
+        padding: 14px 28px;
+        border-radius: 50px;
+        font-weight: 600;
+        font-size: 15px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        box-shadow: 0 4px 15px rgba(33, 150, 243, 0.3);
+        display: inline-flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .btn-refresh:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 20px rgba(33, 150, 243, 0.4);
+    }
+
+    .section-title {
+        color: #2c3e50;
+        margin: 40px 0 25px 0;
+        padding-bottom: 15px;
+        border-bottom: 2px solid #eef2f7;
+        font-size: 28px;
+        font-weight: 600;
+        position: relative;
+    }
+
+    .section-title:after {
+        content: '';
+        position: absolute;
+        bottom: -2px;
+        left: 0;
+        width: 80px;
+        height: 2px;
+        background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+    }
+
+    /* Стили для сетки офисов */
+    .offices-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+        gap: 25px;
+        margin-bottom: 40px;
+    }
+
+    .office-card {
+        background: white;
+        border-radius: 16px;
+        overflow: hidden;
+        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.08);
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        border: 1px solid #f0f4f8;
+        position: relative;
+    }
+
+    .office-card:hover {
+        transform: translateY(-8px);
+        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.12);
+    }
+
+    .office-card.free {
+        border-top: 4px solid #4CAF50;
+    }
+
+    .office-card.occupied {
+        border-top: 4px solid #F44336;
+    }
+
+    .office-card-header {
+        padding: 25px 25px 15px;
+        border-bottom: 1px solid #f0f4f8;
+    }
+
+    .office-number {
+        font-size: 24px;
+        font-weight: 700;
+        color: #2c3e50;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        margin-bottom: 10px;
+    }
+
+    .office-number:before {
+        content: '🏢';
+        font-size: 20px;
+    }
+
+    .office-card-body {
+        padding: 20px 25px;
+    }
+
+    .office-status {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 8px 16px;
+        border-radius: 50px;
+        font-size: 14px;
+        font-weight: 600;
+        margin-bottom: 20px;
+    }
+
+    .status-free {
+        background: rgba(76, 175, 80, 0.15);
+        color: #2e7d32;
+    }
+
+    .status-occupied {
+        background: rgba(244, 67, 54, 0.15);
+        color: #c62828;
+    }
+
+    .office-price {
+        font-size: 28px;
+        font-weight: 700;
+        color: #2196F3;
+        margin-bottom: 20px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .office-price:before {
+        content: '💰';
+        font-size: 20px;
+    }
+
+    .price-period {
+        font-size: 14px;
+        color: #78909c;
+        font-weight: 500;
+        margin-left: 5px;
+    }
+
+    .office-tenant {
+        font-size: 14px;
+        color: #546e7a;
+        margin-top: 10px;
+        padding: 10px 0;
+        border-top: 1px dashed #eceff1;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    .office-tenant:before {
+        content: '👤';
+    }
+
+    .office-card-footer {
+        padding: 20px 25px;
+        background: #fafbfc;
+        border-top: 1px solid #f0f4f8;
+    }
+
+    .action-buttons {
+        display: flex;
+        gap: 12px;
+    }
+
+    .btn {
+        padding: 12px 24px;
+        border: none;
+        border-radius: 10px;
+        font-weight: 600;
+        font-size: 14px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        flex: 1;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+    }
+
+    .btn-book {
+        background: linear-gradient(135deg, #4CAF50 0%, #2e7d32 100%);
+        color: white;
+        box-shadow: 0 4px 15px rgba(76, 175, 80, 0.3);
+    }
+
+    .btn-book:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 20px rgba(76, 175, 80, 0.4);
+    }
+
+    .btn-cancel {
+        background: linear-gradient(135deg, #F44336 0%, #c62828 100%);
+        color: white;
+        box-shadow: 0 4px 15px rgba(244, 67, 54, 0.3);
+    }
+
+    .btn-cancel:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 20px rgba(244, 67, 54, 0.4);
+    }
+
+    .occupied-info {
+        text-align: center;
+        color: #78909c;
+        font-style: italic;
+        padding: 12px;
+        background: #f5f7fa;
+        border-radius: 8px;
+        font-size: 14px;
+    }
+
+    /* Стили для индикатора загрузки */
+    .loading {
+        text-align: center;
+        padding: 60px 20px;
+        color: #78909c;
+    }
+
+    .loading-spinner {
+        width: 50px;
+        height: 50px;
+        border: 4px solid #f3f3f3;
+        border-top: 4px solid #667eea;
+        border-radius: 50%;
+        animation: spin 1s linear infinite;
+        margin: 0 auto 20px;
+    }
+
+    @keyframes spin {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+    }
+
+    /* Стили для блока общей стоимости */
+    .total-cost-container {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border-radius: 16px;
+        padding: 40px;
+        color: white;
+        text-align: center;
+        box-shadow: 0 15px 35px rgba(102, 126, 234, 0.3);
+        margin-top: 40px;
+    }
+
+    .total-cost-title {
+        font-size: 22px;
+        font-weight: 600;
+        margin-bottom: 15px;
+        opacity: 0.9;
+    }
+
+    .total-amount {
+        font-size: 48px;
+        font-weight: 700;
+        margin: 20px 0;
+        text-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+    }
+
+    .total-period {
+        font-size: 16px;
+        opacity: 0.8;
+        margin-top: 10px;
+    }
+
+    .no-rent {
+        background: linear-gradient(135deg, #78909c 0%, #546e7a 100%);
+    }
+
+    /* Стили для сообщений об ошибках */
+    .error-message {
+        background: linear-gradient(135deg, #ff5252 0%, #d32f2f 100%);
+        color: white;
+        padding: 25px;
+        border-radius: 12px;
+        text-align: center;
+        margin: 20px 0;
+        box-shadow: 0 8px 20px rgba(255, 82, 82, 0.3);
+    }
+
+    .error-message button {
+        margin-top: 15px;
+        background: rgba(255, 255, 255, 0.2);
+        border: 2px solid white;
+        color: white;
+    }
+
+    .error-message button:hover {
+        background: white;
+        color: #d32f2f;
+    }
+
+    /* Адаптивность */
+    @media (max-width: 768px) {
+        .offices-grid {
+            grid-template-columns: 1fr;
+        }
+        
+        .controls-panel {
+            flex-direction: column;
+            gap: 20px;
+        }
+        
+        .user-status {
+            width: 100%;
+            justify-content: center;
+        }
+        
+        .btn-refresh {
+            width: 100%;
+            justify-content: center;
+        }
+    }
+
+    /* Дополнительные декоративные элементы */
+    .office-card:before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 4px;
+        border-radius: 4px 4px 0 0;
+    }
+
+    .office-card.free:before {
+        background: linear-gradient(90deg, #4CAF50 0%, #2e7d32 100%);
+    }
+
+    .office-card.occupied:before {
+        background: linear-gradient(90deg, #F44336 0%, #c62828 100%);
+    }
+
+    /* Анимации для появления карточек */
+    @keyframes fadeInUp {
+        from {
+            opacity: 0;
+            transform: translateY(20px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    .office-card {
+        animation: fadeInUp 0.6s ease forwards;
+        opacity: 0;
+    }
+
+    .office-card:nth-child(1) { animation-delay: 0.1s; }
+    .office-card:nth-child(2) { animation-delay: 0.2s; }
+    .office-card:nth-child(3) { animation-delay: 0.3s; }
+    .office-card:nth-child(4) { animation-delay: 0.4s; }
+    .office-card:nth-child(5) { animation-delay: 0.5s; }
+    .office-card:nth-child(6) { animation-delay: 0.6s; }
+    .office-card:nth-child(7) { animation-delay: 0.7s; }
+    .office-card:nth-child(8) { animation-delay: 0.8s; }
+
+    /* Стили для скрытого списка */
+    .office-list {
+        display: none;
+    }
+</style>
+{% endblock %}
+
+{% block main %}
+<div class="container">
+    <!-- Шапка с заголовком -->
+    <div class="header-section">
+        <h1>🏢 Управление офисными помещениями</h1>
+        <p style="opacity: 0.9; font-size: 16px;">Бронируйте офисы онлайн в реальном времени</p>
+    </div>
+
+    <!-- Панель управления -->
+    <div class="controls-panel" style="display: flex; justify-content: space-between; align-items: center;">
+        <div>
+            {% if session.get('login') %}
+                <div class="user-status authenticated">
+                    <i>👤</i>
+                    <span>Вы вошли как: <strong>{{ session.get('login') }}</strong></span>
+                </div>
+            {% else %}
+                <div class="user-status unauthenticated">
+                    <i>⚠️</i>
+                    <span>Для бронирования требуется авторизация</span>
+                </div>
+            {% endif %}
+        </div>
+        
+        <button id="refresh-btn" class="btn-refresh">
+            <i>🔄</i>
+            <span>Обновить список</span>
+        </button>
+    </div>
+
+    <!-- Секция с офисами -->
+    <h2 class="section-title">📋 Доступные офисы</h2>
+    
+    <div id="offices-container">
+        <div class="loading" id="loading">
+            <div class="loading-spinner"></div>
+            <p>Загружаем информацию об офисах...</p>
+        </div>
+        <div id="offices-grid" class="offices-grid" style="display: none;"></div>
+    </div>
+
+    <!-- Блок общей стоимости -->
+    <div id="total-cost"></div>
+</div>
+
+<script>
+// Глобальные переменные
+let officesData = [];
+const login = '{{ session.get("login", "") }}';
+
+// Функция для отображения офисов
+function renderOffices() {
+    const officesGrid = document.getElementById('offices-grid');
+    const loading = document.getElementById('loading');
+    
+    if (!officesGrid || !loading) {
+        console.error('Не найден необходимый элемент DOM');
+        return;
+    }
+    
+    // Скрываем загрузку, показываем сетку
+    loading.style.display = 'none';
+    officesGrid.style.display = 'grid';
+    officesGrid.innerHTML = '';
+    
+    if (officesData.length === 0) {
+        officesGrid.innerHTML = `
+            <div style="grid-column: 1/-1; text-align: center; padding: 40px; color: #78909c;">
+                <div style="font-size: 48px; margin-bottom: 20px;">🏢</div>
+                <h3 style="color: #546e7a;">Офисы не найдены</h3>
+                <p>На данный момент нет доступных офисных помещений.</p>
+            </div>
+        `;
+        updateTotalCost(0);
+        return;
+    }
+    
+    let totalCost = 0;
+    
+    officesData.forEach(office => {
+        const isBooked = office.tenant && office.tenant !== '';
+        const isMyBooking = office.tenant === login;
+        
+        const officeCard = document.createElement('div');
+        officeCard.className = `office-card ${isBooked ? 'occupied' : 'free'}`;
+        
+        officeCard.innerHTML = `
+            <div class="office-card-header">
+                <div class="office-number">Офис №${office.number}</div>
+            </div>
+            
+            <div class="office-card-body">
+                <div class="office-status ${isBooked ? 'status-occupied' : 'status-free'}">
+                    ${isBooked ? '🟡 ЗАНЯТ' : '🟢 СВОБОДЕН'}
+                </div>
+                
+                <div class="office-price">
+                    ${office.price.toLocaleString('ru-RU')} <span class="price-period">руб./мес</span>
+                </div>
+                
+                ${isBooked ? `<div class="office-tenant">${office.tenant}</div>` : ''}
+            </div>
+            
+            <div class="office-card-footer">
+                <div class="action-buttons">
+                    ${!isBooked ? 
+                        `<button class="btn btn-book" data-number="${office.number}">
+                            <i>📝</i>
+                            <span>Забронировать</span>
+                        </button>` : 
+                        isMyBooking ? 
+                        `<button class="btn btn-cancel" data-number="${office.number}">
+                            <i>❌</i>
+                            <span>Освободить</span>
+                        </button>` : 
+                        '<div class="occupied-info">Занят другим пользователем</div>'
+                    }
+                </div>
+            </div>
+        `;
+        
+        officesGrid.appendChild(officeCard);
+        
+        if (isMyBooking) {
+            totalCost += office.price;
+        }
+    });
+    
+    // Добавляем обработчики событий
+    document.querySelectorAll('.btn-book').forEach(btn => {
+        btn.addEventListener('click', function() {
+            const officeNumber = parseInt(this.getAttribute('data-number'));
+            bookOffice(officeNumber);
+        });
+    });
+    
+    document.querySelectorAll('.btn-cancel').forEach(btn => {
+        btn.addEventListener('click', function() {
+            const officeNumber = parseInt(this.getAttribute('data-number'));
+            cancelBooking(officeNumber);
+        });
+    });
+    
+    updateTotalCost(totalCost);
+}
+
+// Функция загрузки данных
+async function loadOffices() {
+    try {
+        console.log('Загрузка информации об офисах...');
+        
+        // Показываем индикатор загрузки на кнопке
+        const refreshBtn = document.getElementById('refresh-btn');
+        if (refreshBtn) {
+            refreshBtn.innerHTML = '<i>⏳</i><span>Загрузка...</span>';
+            refreshBtn.disabled = true;
+        }
+        
+        const response = await fetch('/lab6/json-rpc-api/', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({
+                'jsonrpc': '2.0',
+                'method': 'info',
+                'id': Math.round(Math.random() * 1000)
+            })
+        });
+        
+        if (!response.ok) {
+            throw new Error(`Ошибка сети: ${response.status}`);
+        }
+        
+        const data = await response.json();
+        console.log('Данные получены:', data);
+        
+        if (data.error) {
+            throw new Error(`Ошибка API: ${data.error.message}`);
+        }
+        
+        officesData = data.result || [];
+        console.log(`Загружено ${officesData.length} офисов`);
+        
+        renderOffices();
+        
+    } catch (error) {
+        console.error('Ошибка загрузки:', error);
+        const container = document.getElementById('offices-container');
+        if (container) {
+            container.innerHTML = `
+                <div class="error-message">
+                    <h3>⚠️ Ошибка загрузки</h3>
+                    <p>${error.message}</p>
+                    <button onclick="loadOffices()" class="btn" style="background: white; color: #d32f2f; border: none; padding: 10px 20px; border-radius: 8px; margin-top: 15px;">
+                        <i>🔄</i>
+                        <span>Повторить попытку</span>
+                    </button>
+                </div>
+            `;
+        }
+    } finally {
+        // Восстанавливаем кнопку обновления
+        const refreshBtn = document.getElementById('refresh-btn');
+        if (refreshBtn) {
+            refreshBtn.innerHTML = '<i>🔄</i><span>Обновить список</span>';
+            refreshBtn.disabled = false;
+        }
+    }
+}
+
+// Функция бронирования
+async function bookOffice(officeNumber) {
+    if (!confirm(`Вы уверены, что хотите забронировать офис №${officeNumber}?`)) {
+        return;
+    }
+    
+    try {
+        const response = await fetch('/lab6/json-rpc-api/', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({
+                'jsonrpc': '2.0',
+                'method': 'booking',
+                'params': officeNumber,
+                'id': Math.round(Math.random() * 1000)
+            })
+        });
+        
+        const data = await response.json();
+        
+        if (data.error) {
+            switch(data.error.code) {
+                case 1:
+                    alert('❌ Вы не авторизованы. Пожалуйста, войдите в систему.');
+                    break;
+                case 2:
+                    alert('❌ Этот офис уже забронирован.');
+                    break;
+                default:
+                    alert(`❌ Ошибка: ${data.error.message}`);
+            }
+            return;
+        }
+        
+        alert('✅ Офис успешно забронирован!');
+        await loadOffices();
+        
+    } catch (error) {
+        console.error('Ошибка бронирования:', error);
+        alert('❌ Произошла ошибка при бронировании');
+    }
+}
+
+// Функция отмены бронирования
+async function cancelBooking(officeNumber) {
+    if (!confirm(`Вы уверены, что хотите отменить бронирование офиса №${officeNumber}?`)) {
+        return;
+    }
+    
+    try {
+        const response = await fetch('/lab6/json-rpc-api/', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({
+                'jsonrpc': '2.0',
+                'method': 'cancelation',
+                'params': officeNumber,
+                'id': Math.round(Math.random() * 1000)
+            })
+        });
+        
+        const data = await response.json();
+        
+        if (data.error) {
+            switch(data.error.code) {
+                case 1:
+                    alert('❌ Вы не авторизованы.');
+                    break;
+                case 3:
+                    alert('❌ Этот офис не был забронирован.');
+                    break;
+                case 4:
+                    alert('❌ Вы не можете отменить чужое бронирование.');
+                    break;
+                default:
+                    alert(`❌ Ошибка: ${data.error.message}`);
+            }
+            return;
+        }
+        
+        alert('✅ Бронирование успешно отменено!');
+        await loadOffices();
+        
+    } catch (error) {
+        console.error('Ошибка отмены:', error);
+        alert('❌ Произошла ошибка при отмене бронирования');
+    }
+}
+
+// Функция обновления общей стоимости
+function updateTotalCost(totalCost) {
+    const totalCostElement = document.getElementById('total-cost');
+    if (!totalCostElement) return;
+    
+    if (totalCost > 0) {
+        totalCostElement.innerHTML = `
+            <div class="total-cost-container">
+                <div class="total-cost-title">💰 Общая стоимость вашей аренды</div>
+                <div class="total-amount">${totalCost.toLocaleString('ru-RU')} ₽</div>
+                <div class="total-period">в месяц</div>
+                <p style="margin-top: 20px; opacity: 0.8; font-size: 14px;">
+                    Зарезервировано офисов на сумму в месяц
+                </p>
+            </div>
+        `;
+    } else {
+        totalCostElement.innerHTML = `
+            <div class="total-cost-container no-rent">
+                <div class="total-cost-title">💰 Общая стоимость аренды</div>
+                <div style="font-size: 36px; margin: 20px 0; opacity: 0.8;">0 ₽</div>
+                <div class="total-period">У вас нет арендованных офисов</div>
+                <p style="margin-top: 20px; opacity: 0.8; font-size: 14px;">
+                    Забронируйте офисы, чтобы увидеть общую стоимость
+                </p>
+            </div>
+        `;
+    }
+}
+
+// Инициализация при загрузке страницы
+document.addEventListener('DOMContentLoaded', function() {
+    console.log('Страница загружена, инициализация...');
+    
+    // Находим кнопку обновления
+    const refreshBtn = document.getElementById('refresh-btn');
+    if (refreshBtn) {
+        refreshBtn.addEventListener('click', loadOffices);
+    }
+    
+    // Загружаем офисы
+    loadOffices();
+});
+
+// Дополнительная проверка для старых браузеров
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', function() {
+        loadOffices();
+    });
+} else {
+    // DOM уже загружен
+    setTimeout(loadOffices, 100);
+}
+</script>
+{% endblock %}
