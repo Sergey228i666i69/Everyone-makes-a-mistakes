@@ -75,6 +75,20 @@
     font-weight: 600;
 }
 
+.lab8-search {
+    margin-top: 12px;
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+.lab8-search input {
+    flex: 1 1 220px;
+    padding: 8px 10px;
+    border-radius: 6px;
+    border: 1px solid #c7dbe8;
+}
+
 .article-list {
     margin-top: 16px;
     display: grid;
@@ -95,6 +109,14 @@
 .article-card p {
     margin: 0 0 10px;
     white-space: pre-wrap;
+}
+
+.article-meta {
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    color: #667788;
+    margin-bottom: 6px;
 }
 
 .article-actions {

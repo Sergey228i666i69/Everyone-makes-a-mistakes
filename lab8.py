@@ -1,6 +1,7 @@
 from flask import Blueprint, render_template, request, redirect, abort
 from flask_login import login_user, login_required, logout_user, current_user
 from werkzeug.security import generate_password_hash, check_password_hash
+from sqlalchemy import or_
 
 from db import db
 from db.models import users, articles
@@ -71,6 +72,7 @@ def create():
 
     title = request.form.get('title')
     article_text = request.form.get('article_text')
+    is_public = bool(request.form.get('is_public'))
 
     if not title or not article_text:
         return render_template('lab8/create.html', error='Заполните все поля')
@@ -78,7 +80,8 @@ def create():
     new_article = articles(
         login_id=current_user.id,
         title=title,
-        article_text=article_text
+        article_text=article_text,
+        is_public=is_public
     )
     db.session.add(new_article)
     db.session.commit()
@@ -99,6 +102,7 @@ def edit(article_id):
 
     title = request.form.get('title')
     article_text = request.form.get('article_text')
+    is_public = bool(request.form.get('is_public'))
 
     if not title or not article_text:
         return render_template(
@@ -109,6 +113,7 @@ def edit(article_id):
 
     article.title = title
     article.article_text = article_text
+    article.is_public = is_public
     db.session.commit()
     return redirect('/lab8/articles')
 
@@ -125,6 +130,41 @@ def delete(article_id):
     db.session.delete(article)
     db.session.commit()
     return redirect('/lab8/articles')
+
+
+@lab8.route('/public')
+def public_articles():
+    public_list = articles.query.filter_by(is_public=True).all()
+    return render_template('lab8/public.html', articles=public_list)
+
+
+@lab8.route('/search')
+def search():
+    query = request.args.get('q', '').strip()
+    if not query:
+        return render_template('lab8/search.html', query=query, articles=[])
+
+    pattern = f'%{query}%'
+    search_filter = or_(
+        articles.title.ilike(pattern),
+        articles.article_text.ilike(pattern)
+    )
+
+    if current_user.is_authenticated:
+        results = articles.query.filter(
+            search_filter,
+            or_(
+                articles.is_public.is_(True),
+                articles.login_id == current_user.id
+            )
+        ).all()
+    else:
+        results = articles.query.filter(
+            search_filter,
+            articles.is_public.is_(True)
+        ).all()
+
+    return render_template('lab8/search.html', query=query, articles=results)
 
 
 @lab8.route('/logout')

@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+
+{% block lab %}Лабораторная работа 8{% endblock %}
+
+{% block main %}
+    <link rel="stylesheet" href="{{ url_for('static', filename='lab8.css') }}">
+    <div class="lab8-page">
+        <h1>Поиск по статьям</h1>
+        <form class="lab8-search" method="get">
+            <input type="text" name="q" placeholder="Поиск по статьям" value="{{ query }}">
+            <button type="submit" class="menu-item">Искать</button>
+        </form>
+        {% if not query %}
+            <p>Введите строку для поиска.</p>
+        {% elif articles %}
+            <div class="article-list">
+                {% for article in articles %}
+                    <div class="article-card">
+                        <h3>{{ article.title }}</h3>
+                        <p>{{ article.article_text }}</p>
+                    </div>
+                {% endfor %}
+            </div>
+        {% else %}
+            <p>Ничего не найдено.</p>
+        {% endif %}
+    </div>
+{% endblock %}

@@ -10,12 +10,16 @@
             {% if current_user.is_authenticated %}
                 <a href="/lab8/articles" class="menu-item">Список статей</a>
                 <a href="/lab8/create" class="menu-item">Создать статью</a>
+                <a href="/lab8/public" class="menu-item">Публичные статьи</a>
+                <a href="/lab8/search" class="menu-item">Поиск</a>
                 <a href="/lab8/logout" class="menu-item">Выйти</a>
                 <div class="user-display">{{ current_user.login }}</div>
             {% else %}
                 <a href="/lab8/register" class="menu-item">Регистрация</a>
                 <a href="/lab8/articles" class="menu-item">Список статей</a>
                 <a href="/lab8/create" class="menu-item">Создать статью</a>
+                <a href="/lab8/public" class="menu-item">Публичные статьи</a>
+                <a href="/lab8/search" class="menu-item">Поиск</a>
                 <a href="/lab8/login" class="menu-item">Войти</a>
                 <div class="user-display">Anonymous</div>
             {% endif %}

@@ -7,11 +7,22 @@
     <div class="lab8-page">
         <h1>Мои статьи</h1>
         <a class="menu-item" href="/lab8/create">Создать статью</a>
+        <form class="lab8-search" method="get" action="/lab8/search">
+            <input type="text" name="q" placeholder="Поиск по статьям">
+            <button type="submit" class="menu-item">Искать</button>
+        </form>
         {% if articles %}
             <div class="article-list">
                 {% for article in articles %}
                     <div class="article-card">
                         <h3>{{ article.title }}</h3>
+                        <div class="article-meta">
+                            {% if article.is_public %}
+                                Публичная
+                            {% else %}
+                                Приватная
+                            {% endif %}
+                        </div>
                         <p>{{ article.article_text }}</p>
                         <div class="article-actions">
                             <a class="menu-item" href="/lab8/edit/{{ article.id }}">Редактировать</a>
