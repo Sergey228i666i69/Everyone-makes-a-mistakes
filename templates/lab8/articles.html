@@ -1,0 +1,11 @@
+{% extends "base.html" %}
+
+{% block lab %}Лабораторная работа 8{% endblock %}
+
+{% block main %}
+    <link rel="stylesheet" href="{{ url_for('static', filename='lab8.css') }}">
+    <div class="lab8-page">
+        <h1>Мои статьи</h1>
+        <p>Список статей будет доступен после реализации CRUD.</p>
+    </div>
+{% endblock %}

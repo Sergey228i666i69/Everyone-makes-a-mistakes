@@ -1,5 +1,6 @@
 from flask import Blueprint, render_template, request, redirect
-from werkzeug.security import generate_password_hash
+from flask_login import login_user, login_required
+from werkzeug.security import generate_password_hash, check_password_hash
 
 from db import db
 from db.models import users
@@ -32,3 +33,28 @@ def register():
     db.session.add(new_user)
     db.session.commit()
     return redirect('/lab8/')
+
+
+@lab8.route('/login', methods=['GET', 'POST'])
+def login():
+    if request.method == 'GET':
+        return render_template('lab8/login.html')
+
+    login = request.form.get('login')
+    password = request.form.get('password')
+
+    if not login or not password:
+        return render_template('lab8/login.html', error='Заполните поля')
+
+    user = users.query.filter_by(login=login).first()
+    if not user or not check_password_hash(user.password, password):
+        return render_template('lab8/login.html', error='Логин или пароль неверны')
+
+    login_user(user)
+    return redirect('/lab8/')
+
+
+@lab8.route('/articles')
+@login_required
+def articles():
+    return render_template('lab8/articles.html')

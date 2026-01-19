@@ -1,4 +1,5 @@
 from flask import Flask, url_for, request, redirect, abort, render_template, session
+from flask_login import LoginManager
 import os
 from datetime import datetime
 from lab1 import lab1
@@ -27,6 +28,16 @@ app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db.init_app(app)
 
 from db import models  # noqa: E402
+from db.models import users  # noqa: E402
+
+login_manager = LoginManager()
+login_manager.init_app(app)
+login_manager.login_view = 'lab8.login'
+
+
+@login_manager.user_loader
+def load_user(user_id):
+    return users.query.get(int(user_id))
 
 app.register_blueprint(lab1, url_prefix='/lab1')
 app.register_blueprint(lab2, url_prefix='/lab2')
