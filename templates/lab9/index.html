@@ -28,7 +28,7 @@
                         <div class="gift-opened">Подарок уже открыт</div>
                     {% else %}
                         <button class="gift-box" data-id="{{ gift.id }}" type="button">
-                            <img src="{{ url_for('static', filename='lab9/' ~ surprise_image) }}" alt="Подарок">
+                            <img src="{{ url_for('static', filename='lab9/' ~ surprise_images[gift.id]) }}" alt="Подарок">
                         </button>
                     {% endif %}
                 </div>

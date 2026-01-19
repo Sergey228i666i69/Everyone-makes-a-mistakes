@@ -6,7 +6,7 @@ from flask_login import current_user
 lab9 = Blueprint('lab9', __name__)
 
 GIFT_LIMIT = 3
-SURPRISE_IMAGE_BASE = 'surprice'
+SURPRISE_IMAGE_PREFIX = 'surprice_'
 SPECIAL_GIFT_IDS = {8, 9, 10}
 
 GIFTS = [
@@ -109,13 +109,17 @@ GIFT_POSITIONS = {
 @lab9.route('/')
 def index():
     remaining_count = sum(1 for gift in GIFTS if not gift['is_taken'])
-    surprise_image = _resolve_image(SURPRISE_IMAGE_BASE)
+    surprise_images = {
+        gift['id']: _resolve_image(f"{SURPRISE_IMAGE_PREFIX}{gift['id']}")
+        for gift in GIFTS
+    }
+
     return render_template(
         'lab9/index.html',
         gifts=GIFTS,
         remaining_count=remaining_count,
         gift_positions=GIFT_POSITIONS,
-        surprise_image=surprise_image,
+        surprise_images=surprise_images,
         special_gift_ids=SPECIAL_GIFT_IDS
     )
 
@@ -177,8 +181,13 @@ def reset_gifts():
 
 def _resolve_image(base_name):
     static_dir = os.path.join(current_app.root_path, 'static', 'lab9')
-    for ext in ('.png', '.jpg', '.jpeg', '.gif'):
-        filename = f'{base_name}{ext}'
-        if os.path.exists(os.path.join(static_dir, filename)):
-            return filename
+    base_lower = base_name.lower()
+    try:
+        for filename in os.listdir(static_dir):
+            name, _ext = os.path.splitext(filename)
+            if name.lower() == base_lower:
+                return filename
+    except FileNotFoundError:
+        return f'{base_name}.png'
+
     return f'{base_name}.png'
