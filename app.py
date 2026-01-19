@@ -31,6 +31,14 @@ db.init_app(app)
 from db import models  # noqa: E402
 from db.models import users  # noqa: E402
 
+with app.app_context():
+    if app.config['DB_TYPE'] == 'sqlite':
+        try:
+            os.makedirs(app.instance_path)
+        except OSError:
+            pass
+    db.create_all()
+
 login_manager = LoginManager()
 login_manager.init_app(app)
 login_manager.login_view = 'lab8.login'
