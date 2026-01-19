@@ -1,11 +1,13 @@
 import os
 
 from flask import Blueprint, render_template, request, jsonify, session, current_app, url_for
+from flask_login import current_user
 
 lab9 = Blueprint('lab9', __name__)
 
 GIFT_LIMIT = 3
 SURPRISE_IMAGE_BASE = 'surprice'
+SPECIAL_GIFT_IDS = {8, 9, 10}
 
 GIFTS = [
     {
@@ -113,7 +115,8 @@ def index():
         gifts=GIFTS,
         remaining_count=remaining_count,
         gift_positions=GIFT_POSITIONS,
-        surprise_image=surprise_image
+        surprise_image=surprise_image,
+        special_gift_ids=SPECIAL_GIFT_IDS
     )
 
 
@@ -133,6 +136,12 @@ def get_gift():
     if gift['is_taken']:
         return jsonify(result='error', message='Этот подарок уже открыт.', is_taken=True), 409
 
+    if gift_id in SPECIAL_GIFT_IDS and not current_user.is_authenticated:
+        return jsonify(
+            result='error',
+            message='Этот подарок доступен только авторизованным пользователям.'
+        ), 403
+
     opened_count = session.get('saved_gift_count', 0)
     if opened_count >= GIFT_LIMIT:
         return jsonify(result='error', message='Можно открыть не более 3-х подарков.'), 403
@@ -150,6 +159,20 @@ def get_gift():
         is_taken=True,
         remaining_count=remaining_count
     )
+
+
+@lab9.route('/reset', methods=['POST'])
+def reset_gifts():
+    if not current_user.is_authenticated:
+        return jsonify(result='error', message='Недостаточно прав доступа.'), 403
+
+    for gift in GIFTS:
+        gift['is_taken'] = False
+
+    session['saved_gift_count'] = 0
+
+    remaining_count = sum(1 for gift in GIFTS if not gift['is_taken'])
+    return jsonify(result='success', remaining_count=remaining_count)
 
 
 def _resolve_image(base_name):

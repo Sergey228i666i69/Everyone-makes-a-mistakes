@@ -19,9 +19,10 @@
             {% for gift in gifts %}
                 {% set pos = gift_positions[gift.id] %}
                 <div
-                    class="gift-slot {% if gift.is_taken %}is-taken{% endif %}"
+                    class="gift-slot {% if gift.is_taken %}is-taken{% endif %}{% if gift.id in special_gift_ids %} gift-special{% endif %}"
                     style="top: {{ pos.top }}px; left: {{ pos.left }}px;"
                     data-id="{{ gift.id }}"
+                    {% if gift.id in special_gift_ids %}data-requires-auth="1"{% endif %}
                 >
                     {% if gift.is_taken %}
                         <div class="gift-opened">Подарок уже открыт</div>
@@ -35,10 +36,16 @@
         </div>
 
         <div id="gift-message" class="lab9-message" role="status"></div>
+
+        {% if current_user.is_authenticated %}
+            <button id="reset-gifts" class="lab9-reset" type="button">Дед Мороз</button>
+        {% endif %}
     </div>
 
     <script>
         const giftUrl = "{{ url_for('lab9.get_gift') }}";
+        const resetUrl = "{{ url_for('lab9.reset_gifts') }}";
+        const isAuthenticated = {{ 'true' if current_user.is_authenticated else 'false' }};
         const remainingCount = document.getElementById('remaining-count');
         const messageBox = document.getElementById('gift-message');
 
@@ -55,7 +62,13 @@
 
             const slot = button.closest('.gift-slot');
             const giftId = slot?.dataset.id;
+            const requiresAuth = slot?.dataset.requiresAuth === '1';
             if (!giftId) {
+                return;
+            }
+
+            if (requiresAuth && !isAuthenticated) {
+                showMessage('Этот подарок доступен только авторизованным пользователям.', true);
                 return;
             }
 
@@ -90,5 +103,23 @@
                     showMessage('Ошибка соединения. Попробуйте снова.', true);
                 });
         });
+
+        const resetButton = document.getElementById('reset-gifts');
+        if (resetButton) {
+            resetButton.addEventListener('click', () => {
+                fetch(resetUrl, { method: 'POST' })
+                    .then((response) => response.json())
+                    .then((data) => {
+                        if (data.result !== 'success') {
+                            showMessage(data.message || 'Не удалось сбросить подарки.', true);
+                            return;
+                        }
+                        location.reload();
+                    })
+                    .catch(() => {
+                        showMessage('Ошибка соединения. Попробуйте снова.', true);
+                    });
+            });
+        }
     </script>
 {% endblock %}
