@@ -32,6 +32,7 @@ def register():
     new_user = users(login=login, password=password_hash)
     db.session.add(new_user)
     db.session.commit()
+    login_user(new_user)
     return redirect('/lab8/')
 
 
@@ -50,7 +51,8 @@ def login():
     if not user or not check_password_hash(user.password, password):
         return render_template('lab8/login.html', error='Логин или пароль неверны')
 
-    login_user(user)
+    remember = bool(request.form.get('remember'))
+    login_user(user, remember=remember)
     return redirect('/lab8/')
 
 

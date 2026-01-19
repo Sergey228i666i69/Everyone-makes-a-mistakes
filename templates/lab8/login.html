@@ -15,6 +15,10 @@
                 Пароль
                 <input type="password" name="password" required>
             </label>
+            <label class="form-check">
+                <input type="checkbox" name="remember" value="1">
+                Запомнить меня
+            </label>
             {% if error %}
                 <div class="form-error">{{ error }}</div>
             {% endif %}
