@@ -1,0 +1,40 @@
+.lab8-page {
+    max-width: 900px;
+    margin: 0 auto;
+}
+
+.lab8-page h1 {
+    margin-top: 0;
+}
+
+.lab8-menu {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-bottom: 16px;
+    align-items: center;
+}
+
+.lab8-menu .menu-item {
+    display: inline-block;
+    padding: 8px 12px;
+    background: #e8f2f9;
+    border-radius: 6px;
+    text-decoration: none;
+    color: #0b3d5c;
+    border: 1px solid #c7dbe8;
+}
+
+.lab8-menu .menu-item:hover {
+    background: #dcebf6;
+}
+
+.lab8-menu .user-display {
+    margin-left: auto;
+    padding: 8px 12px;
+    border-radius: 6px;
+    background: #f6f6f6;
+    border: 1px solid #e0e0e0;
+    color: #444;
+    font-size: 14px;
+}

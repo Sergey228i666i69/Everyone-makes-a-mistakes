@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+
+{% block lab %}Лабораторная работа 8{% endblock %}
+
+{% block main %}
+    <link rel="stylesheet" href="{{ url_for('static', filename='lab8.css') }}">
+    <div class="lab8-page">
+        <h1>Flask и ORM</h1>
+        <nav class="lab8-menu">
+            <a href="/lab8/login" class="menu-item">Вход</a>
+            <a href="/lab8/register" class="menu-item">Регистрация</a>
+            <a href="/lab8/articles" class="menu-item">Список статей</a>
+            <a href="/lab8/create" class="menu-item">Создать статью</a>
+            <div class="user-display">Anonymous</div>
+        </nav>
+        <p>Здесь будет база знаний с регистрацией, авторизацией и статьями.</p>
+    </div>
+{% endblock %}
