@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+
+{% block lab %}Лабораторная работа 8{% endblock %}
+
+{% block main %}
+    <link rel="stylesheet" href="{{ url_for('static', filename='lab8.css') }}">
+    <div class="lab8-page">
+        <h1>Создать статью</h1>
+        <form class="lab8-form" method="post">
+            <label class="form-field">
+                Заголовок
+                <input type="text" name="title" required>
+            </label>
+            <label class="form-field">
+                Текст статьи
+                <textarea name="article_text" rows="6" required></textarea>
+            </label>
+            {% if error %}
+                <div class="form-error">{{ error }}</div>
+            {% endif %}
+            <button type="submit" class="menu-item">Сохранить</button>
+        </form>
+    </div>
+{% endblock %}

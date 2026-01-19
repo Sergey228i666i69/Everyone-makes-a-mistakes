@@ -67,3 +67,44 @@
     color: #a13232;
     font-size: 14px;
 }
+
+.lab8-form .form-check {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-weight: 600;
+}
+
+.article-list {
+    margin-top: 16px;
+    display: grid;
+    gap: 12px;
+}
+
+.article-card {
+    padding: 12px 14px;
+    border: 1px solid #d6e4ef;
+    border-radius: 8px;
+    background: #f9fbfd;
+}
+
+.article-card h3 {
+    margin: 0 0 6px;
+}
+
+.article-card p {
+    margin: 0 0 10px;
+    white-space: pre-wrap;
+}
+
+.article-actions {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+.menu-item.danger {
+    background: #ffe6e6;
+    border-color: #f3b5b5;
+    color: #8a2323;
+}

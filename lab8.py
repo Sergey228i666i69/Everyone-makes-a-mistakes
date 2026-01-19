@@ -1,9 +1,9 @@
-from flask import Blueprint, render_template, request, redirect
-from flask_login import login_user, login_required, logout_user
+from flask import Blueprint, render_template, request, redirect, abort
+from flask_login import login_user, login_required, logout_user, current_user
 from werkzeug.security import generate_password_hash, check_password_hash
 
 from db import db
-from db.models import users
+from db.models import users, articles
 
 lab8 = Blueprint('lab8', __name__)
 
@@ -58,8 +58,73 @@ def login():
 
 @lab8.route('/articles')
 @login_required
-def articles():
-    return render_template('lab8/articles.html')
+def articles_list():
+    user_articles = articles.query.filter_by(login_id=current_user.id).all()
+    return render_template('lab8/articles.html', articles=user_articles)
+
+
+@lab8.route('/create', methods=['GET', 'POST'])
+@login_required
+def create():
+    if request.method == 'GET':
+        return render_template('lab8/create.html')
+
+    title = request.form.get('title')
+    article_text = request.form.get('article_text')
+
+    if not title or not article_text:
+        return render_template('lab8/create.html', error='Заполните все поля')
+
+    new_article = articles(
+        login_id=current_user.id,
+        title=title,
+        article_text=article_text
+    )
+    db.session.add(new_article)
+    db.session.commit()
+    return redirect('/lab8/articles')
+
+
+@lab8.route('/edit/<int:article_id>', methods=['GET', 'POST'])
+@login_required
+def edit(article_id):
+    article = articles.query.get(article_id)
+    if not article:
+        abort(404)
+    if article.login_id != current_user.id:
+        abort(403)
+
+    if request.method == 'GET':
+        return render_template('lab8/edit.html', article=article)
+
+    title = request.form.get('title')
+    article_text = request.form.get('article_text')
+
+    if not title or not article_text:
+        return render_template(
+            'lab8/edit.html',
+            article=article,
+            error='Заполните все поля'
+        )
+
+    article.title = title
+    article.article_text = article_text
+    db.session.commit()
+    return redirect('/lab8/articles')
+
+
+@lab8.route('/delete/<int:article_id>', methods=['POST'])
+@login_required
+def delete(article_id):
+    article = articles.query.get(article_id)
+    if not article:
+        abort(404)
+    if article.login_id != current_user.id:
+        abort(403)
+
+    db.session.delete(article)
+    db.session.commit()
+    return redirect('/lab8/articles')
 
 
 @lab8.route('/logout')

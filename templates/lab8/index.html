@@ -7,11 +7,18 @@
     <div class="lab8-page">
         <h1>Flask и ORM</h1>
         <nav class="lab8-menu">
-            <a href="/lab8/login" class="menu-item">Вход</a>
-            <a href="/lab8/register" class="menu-item">Регистрация</a>
-            <a href="/lab8/articles" class="menu-item">Список статей</a>
-            <a href="/lab8/create" class="menu-item">Создать статью</a>
-            <div class="user-display">Anonymous</div>
+            {% if current_user.is_authenticated %}
+                <a href="/lab8/articles" class="menu-item">Список статей</a>
+                <a href="/lab8/create" class="menu-item">Создать статью</a>
+                <a href="/lab8/logout" class="menu-item">Выйти</a>
+                <div class="user-display">{{ current_user.login }}</div>
+            {% else %}
+                <a href="/lab8/register" class="menu-item">Регистрация</a>
+                <a href="/lab8/articles" class="menu-item">Список статей</a>
+                <a href="/lab8/create" class="menu-item">Создать статью</a>
+                <a href="/lab8/login" class="menu-item">Войти</a>
+                <div class="user-display">Anonymous</div>
+            {% endif %}
         </nav>
         <p>Здесь будет база знаний с регистрацией, авторизацией и статьями.</p>
     </div>
