@@ -1,0 +1,94 @@
+{% extends "base.html" %}
+
+{% block lab %}Лабораторная работа 9{% endblock %}
+
+{% block main %}
+    <link rel="stylesheet" href="{{ url_for('static', filename='lab9/style.css') }}">
+    <div class="lab9-page">
+        <header class="lab9-header">
+            <h1>Новогодняя мастерская подарков</h1>
+            <p>Выберите до трех коробок и откройте сюрпризы!</p>
+        </header>
+
+        <div class="lab9-counter">
+            Всего неоткрытых подарков:
+            <span id="remaining-count">{{ remaining_count }}</span>
+        </div>
+
+        <div class="lab9-stage">
+            {% for gift in gifts %}
+                {% set pos = gift_positions[gift.id] %}
+                <div
+                    class="gift-slot {% if gift.is_taken %}is-taken{% endif %}"
+                    style="top: {{ pos.top }}px; left: {{ pos.left }}px;"
+                    data-id="{{ gift.id }}"
+                >
+                    {% if gift.is_taken %}
+                        <div class="gift-opened">Подарок уже открыт</div>
+                    {% else %}
+                        <button class="gift-box" data-id="{{ gift.id }}" type="button">
+                            <img src="{{ url_for('static', filename='lab9/' ~ surprise_image) }}" alt="Подарок">
+                        </button>
+                    {% endif %}
+                </div>
+            {% endfor %}
+        </div>
+
+        <div id="gift-message" class="lab9-message" role="status"></div>
+    </div>
+
+    <script>
+        const giftUrl = "{{ url_for('lab9.get_gift') }}";
+        const remainingCount = document.getElementById('remaining-count');
+        const messageBox = document.getElementById('gift-message');
+
+        const showMessage = (text, isError = false) => {
+            messageBox.textContent = text;
+            messageBox.classList.toggle('is-error', isError);
+        };
+
+        document.addEventListener('click', (event) => {
+            const button = event.target.closest('.gift-box');
+            if (!button) {
+                return;
+            }
+
+            const slot = button.closest('.gift-slot');
+            const giftId = slot?.dataset.id;
+            if (!giftId) {
+                return;
+            }
+
+            fetch(giftUrl, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ id: giftId })
+            })
+                .then((response) => response.json())
+                .then((data) => {
+                    if (data.result !== 'success') {
+                        showMessage(data.message || 'Не удалось открыть подарок.', true);
+                        return;
+                    }
+
+                    slot.innerHTML = `
+                        <div class="gift-content">
+                            <img src="${data.image_url}" alt="Подарок">
+                            <p>${data.text}</p>
+                        </div>
+                    `;
+
+                    if (typeof data.remaining_count === 'number') {
+                        remainingCount.textContent = data.remaining_count;
+                    }
+
+                    showMessage('Подарок открыт!');
+                })
+                .catch(() => {
+                    showMessage('Ошибка соединения. Попробуйте снова.', true);
+                });
+        });
+    </script>
+{% endblock %}

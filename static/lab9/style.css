@@ -1,0 +1,141 @@
+.lab9-page {
+    max-width: 980px;
+    margin: 0 auto;
+    padding: 10px 0 30px;
+    color: #1f2f3a;
+}
+
+.lab9-header {
+    text-align: center;
+    margin-bottom: 16px;
+}
+
+.lab9-header h1 {
+    margin: 0 0 6px;
+    font-size: 32px;
+    color: #154360;
+}
+
+.lab9-header p {
+    margin: 0;
+    color: #3f5b6d;
+}
+
+.lab9-counter {
+    text-align: center;
+    font-weight: 600;
+    margin-bottom: 12px;
+}
+
+.lab9-stage {
+    position: relative;
+    min-height: 560px;
+    border-radius: 16px;
+    background: linear-gradient(180deg, #e6f4ff 0%, #fef6e4 100%);
+    border: 2px solid #d2e6f5;
+    box-shadow: inset 0 0 30px rgba(255, 255, 255, 0.8);
+    overflow: hidden;
+}
+
+.lab9-stage::before,
+.lab9-stage::after {
+    content: "";
+    position: absolute;
+    width: 180px;
+    height: 180px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.55);
+    filter: blur(2px);
+}
+
+.lab9-stage::before {
+    top: -40px;
+    left: -30px;
+}
+
+.lab9-stage::after {
+    bottom: -50px;
+    right: -20px;
+}
+
+.gift-slot {
+    position: absolute;
+    width: 140px;
+    text-align: center;
+}
+
+.gift-box {
+    border: none;
+    background: transparent;
+    cursor: pointer;
+    padding: 0;
+}
+
+.gift-box img {
+    width: 120px;
+    height: auto;
+    transition: transform 0.2s ease;
+}
+
+.gift-box:hover img {
+    transform: scale(1.05) rotate(-2deg);
+}
+
+.gift-opened {
+    padding: 8px;
+    border-radius: 8px;
+    background: rgba(255, 255, 255, 0.7);
+    font-size: 12px;
+    color: #8b5c2f;
+    border: 1px dashed #d9b98f;
+}
+
+.gift-content {
+    padding: 8px 10px;
+    background: rgba(255, 255, 255, 0.9);
+    border-radius: 12px;
+    border: 1px solid #f0d6b4;
+}
+
+.gift-content img {
+    width: 90px;
+    height: auto;
+}
+
+.gift-content p {
+    margin: 6px 0 0;
+    font-size: 13px;
+    color: #5c3d1a;
+}
+
+.lab9-message {
+    margin: 16px auto 0;
+    max-width: 420px;
+    text-align: center;
+    padding: 10px 12px;
+    border-radius: 10px;
+    background: #f0f7ff;
+    color: #1f4d6d;
+    border: 1px solid #c9e2f5;
+    min-height: 40px;
+}
+
+.lab9-message.is-error {
+    background: #ffe9e7;
+    border-color: #f5b6b0;
+    color: #9a2e2b;
+}
+
+@media (max-width: 900px) {
+    .lab9-stage {
+        min-height: 640px;
+    }
+
+    .gift-slot {
+        width: 120px;
+    }
+
+    .gift-box img {
+        width: 100px;
+    }
+}
