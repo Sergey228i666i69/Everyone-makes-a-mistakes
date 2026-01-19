@@ -9,10 +9,24 @@ from lab5 import lab5
 from lab6 import lab6
 from lab7 import lab7
 from lab8 import lab8
+from db import db
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY', 'секретно-секретный секрет')
-app.config['DB_TYPE'] = os.getenv('DB_TYPE', 'postgres')
+app.config['DB_TYPE'] = os.getenv('DB_TYPE', 'sqlite')
+
+if app.config['DB_TYPE'] == 'postgres':
+    app.config['SQLALCHEMY_DATABASE_URI'] = (
+        'postgresql://ivan_ivanov_orm:123@localhost/ivan_ivanov_orm'
+    )
+else:
+    db_path = os.path.join(app.instance_path, 'ivan_ivanov_orm.db')
+    app.config['SQLALCHEMY_DATABASE_URI'] = f'sqlite:///{db_path}'
+
+app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+db.init_app(app)
+
+from db import models  # noqa: E402
 
 app.register_blueprint(lab1, url_prefix='/lab1')
 app.register_blueprint(lab2, url_prefix='/lab2')
