@@ -1,5 +1,5 @@
 from flask import Blueprint, render_template, request, redirect
-from flask_login import login_user, login_required
+from flask_login import login_user, login_required, logout_user
 from werkzeug.security import generate_password_hash, check_password_hash
 
 from db import db
@@ -58,3 +58,10 @@ def login():
 @login_required
 def articles():
     return render_template('lab8/articles.html')
+
+
+@lab8.route('/logout')
+@login_required
+def logout():
+    logout_user()
+    return redirect('/lab8/')
