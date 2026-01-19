@@ -29,7 +29,7 @@ def register():
     if existing_user:
         return render_template('lab8/register.html', error='Такой пользователь уже существует')
 
-    password_hash = generate_password_hash(password)
+    password_hash = generate_password_hash(password, method='pbkdf2:sha256')
     new_user = users(login=login, password=password_hash)
     db.session.add(new_user)
     db.session.commit()
